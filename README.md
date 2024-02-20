@@ -2,6 +2,8 @@
 
 This Python utility script is designed to convert battery current signals stored in Excel format into a simplified format suitable for battery simulation purposes. The script performs downsampling and signal conversion techniques to achieve this.
 
+https://uk.rs-online.com/web/p/electronic-loads/1386139
+
 ## Dependencies
 
 Make sure you have the following dependencies installed:
@@ -31,7 +33,7 @@ pip install pandas matplotlib numpy scipy
 
 - `convert()`: Performs signal conversion techniques such as decimation and interpolation to simplify the signals. The method parameter specifies the conversion method (default is method "1").
 
-- `save()`: Saves the converted signals to a CSV file in the `HMI_FILES` directory. The file format follows specific guidelines for compatibility with battery simulation devices.
+- `save()`: Saves the converted signals to a CSV file in the `HMI_FILES` directory. The file format follows specific guidelines for compatibility with arbitrary wave form generators.
 
 ## Output
 The converted signals are saved in a CSV file named Wave_1.csv in the HMI_FILES directory.
