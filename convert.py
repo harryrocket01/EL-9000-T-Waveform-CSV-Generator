@@ -84,7 +84,12 @@ class BatteryConvert:
         original_integral = np.trapz(self.raw["Current"], x=self.raw["Time"])
         downsampled_integral = np.trapz(self.sampled["Current"], x=self.sampled["Time"])
 
-        print("error =", downsampled_integral - original_integral)
+        print(
+            "error =",
+            (downsampled_integral - original_integral) / original_integral,
+            "%",
+        )
+        print(downsampled_integral, original_integral)
 
     def save(self):
         for index, row in self.sampled.iterrows():
