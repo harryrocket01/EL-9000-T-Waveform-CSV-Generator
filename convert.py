@@ -97,7 +97,12 @@ class BatteryConvert:
             current_g = round(float(self.sampled.at[index + 1, "Current"]), 4)
             self.saved.at[index, "F"] = current_f
             self.saved.at[index, "G"] = current_g
-            self.saved.at[index, "H"] = round(float(row["Current"]), 5) * 1_000_000
+
+            time = (
+                round(float(self.sampled.at[index + 1, "Time"]), 4)
+                - round(float(row["Time"]), 5)
+            ) * 1000000
+            self.saved.at[index, "H"] = time
 
         print(self.saved)
         self.saved.to_csv(
