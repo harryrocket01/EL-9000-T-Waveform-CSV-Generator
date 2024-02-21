@@ -16,7 +16,7 @@ class BatteryConvert:
         # file to convert
         self.root = "HVBatteryCurrent_1Lap.xlsx"
         # name to save
-        self.save_name = "Wave_1"
+        self.save_name = "WAVE_I_02"
         # number of points
         self.points = 100
 
@@ -80,7 +80,7 @@ class BatteryConvert:
             )
 
         self.sampled = pd.DataFrame(downsampled_signal, columns=["Time", "Current"])
-
+        self.sampled = self.sampled.abs()
         original_integral = np.trapz(self.raw["Current"], x=self.raw["Time"])
         downsampled_integral = np.trapz(self.sampled["Current"], x=self.sampled["Time"])
 
@@ -95,20 +95,29 @@ class BatteryConvert:
         for index, row in self.sampled.iterrows():
             if index == self.points - 1:
                 break
-            current_f = round(float(row["Current"]), 4)
-            current_g = round(float(self.sampled.at[index + 1, "Current"]), 4)
+            current_f = round(float(row["Current"]), 2)
+            current_g = round(float(self.sampled.at[index + 1, "Current"]), 2)
             self.saved.at[index, "F"] = current_f
             self.saved.at[index, "G"] = current_g
 
-            time = (
-                round(float(self.sampled.at[index + 1, "Time"]), 4)
-                - round(float(row["Time"]), 5)
-            ) * 1000000
+            time = round(
+                (
+                    round(float(self.sampled.at[index + 1, "Time"]), 2)
+                    - round(float(row["Time"]), 2)
+                )
+                * 1000000,
+                0,
+            )
             self.saved.at[index, "H"] = time
 
         print(self.saved)
         self.saved.to_csv(
-            f"HMI_FILES/{self.save_name}.csv", sep=";", decimal=".", index=False
+            f"HMI_FILES/{self.save_name}.csv",
+            sep=";",
+            decimal=",",
+            index=False,
+            header=False,
+            lineterminator=";\n",
         )
 
         plt.plot(self.raw["Time"], self.raw["Current"])
