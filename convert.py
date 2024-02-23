@@ -16,9 +16,9 @@ class BatteryConvert:
         # file to convert
         self.root = "HVBatteryCurrent_1Lap.xlsx"
         # name to save
-        self.save_name = "WAVE_I_02"
+        self.save_name = "WAVE_I_01"
         # number of points
-        self.points = 100
+        self.points = 98
 
         self.raw = None
         self.sampled = None
@@ -35,6 +35,7 @@ class BatteryConvert:
         # AC START, AC END,STAR FREQ, END FREQ , AC START ANGLE, DC START, DC END,SQUENCE POINT IN TIME
 
         self.saved = pd.DataFrame(0, columns=column_names, index=range(100 - 1))
+        self.saved["H"] = 100
 
     def load(self):
         self.raw = pd.read_excel(self.root)
