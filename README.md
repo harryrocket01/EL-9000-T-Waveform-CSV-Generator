@@ -38,6 +38,6 @@ pip install pandas matplotlib numpy scipy
 ## Output
 The converted signals are saved in a CSV file named Wave_1.csv in the HMI_FILES directory.
 
-##License
+## License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
