@@ -14,11 +14,17 @@ class BatteryConvert:
     def __init__(self):
 
         # file to convert
+        # please have a two column csv, with one coloum of Current, and one column of Time
         self.root = "HVBatteryCurrent_1Lap.xlsx"
         # name to save
         self.save_name = "WAVE_I_01"
-        # number of points
+        # number of points (fills up to 100 with empty lines), found issues when inputting 100 different lines
         self.points = 98
+
+        # Scale Constant, reduces the peaks below a certain value
+        self.scale_const = 0.85
+        # Clamping Values, clamps outliers
+        self.upper_clamp = 30
 
         self.raw = None
         self.sampled = None
@@ -34,7 +40,7 @@ class BatteryConvert:
         ]
         # AC START, AC END,STAR FREQ, END FREQ , AC START ANGLE, DC START, DC END,SQUENCE POINT IN TIME
 
-        self.saved = pd.DataFrame(0, columns=column_names, index=range(100 - 1))
+        self.saved = pd.DataFrame(0, columns=column_names, index=range(100))
         self.saved["H"] = 100
 
     def load(self):
@@ -51,7 +57,6 @@ class BatteryConvert:
         # Decimation
         if method == "1":
             downsampled_signal = signal_np[::decimation_factor]
-            downsampled_signal[:, 1] *= 0.85  # Multiply the second column by 0.85
 
         # Max value
         elif method == "2":
@@ -66,19 +71,12 @@ class BatteryConvert:
             downsampled_signal = np.column_stack(
                 (downsampled_time, downsampled_current)
             )
-        # Mean value
-        else:
-            points_per_segment = len(signal_np) // self.points
-            segments = signal_np[: points_per_segment * 100].reshape(
-                (self.points, points_per_segment, 2)
-            )
-            downsampled_current = np.mean(segments[:, :, 1], axis=1)
-            downsampled_time = segments[
-                np.arange(self.points), np.argmax(segments[:, :, 1], axis=1), 0
-            ]
-            downsampled_signal = np.column_stack(
-                (downsampled_time, downsampled_current)
-            )
+
+        # Scaling and clamping
+        downsampled_signal[:, 1] *= self.scale_const
+        downsampled_signal[:, 1] = np.clip(
+            downsampled_signal[:, 1], 0, self.upper_clamp
+        )
 
         self.sampled = pd.DataFrame(downsampled_signal, columns=["Time", "Current"])
         self.sampled = self.sampled.abs()
